@@ -1,6 +1,6 @@
 # voice-agent-demo
 
-Voice agent demo platform with multi-tenant RAG, FastAPI gateway, and containerized services.
+This project is a multi-business voice receptionist demo designed to show how one platform can power different branded agent experiences for different organizations. It focuses on delivering consistent, helpful conversations, business-specific responses, and a clear path from prototype to real customer-facing voice interactions.
 
 ## Container Registry Convention
 
