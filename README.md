@@ -2,6 +2,15 @@
 
 This project is a multi-business voice receptionist demo designed to show how one platform can power different branded agent experiences for different organizations. It focuses on delivering consistent, helpful conversations, business-specific responses, and a clear path from prototype to real customer-facing voice interactions.
 
+## Local Setup
+
+Use the setup guide in `docs/setup.md` to:
+
+- create a virtual environment
+- install `requirements.txt`
+- configure `.env` from `.env.example`
+- run a quick dependency import check
+
 ## Container Registry Convention
 
 All service images are tagged and pushed as:
@@ -17,12 +26,15 @@ All service images are tagged and pushed as:
 
 Expected `make` workflow:
 
-- `make build` builds all service images
-- `make push` pushes all `:latest` images to `docker.local.fyre.org`
-- `make release` runs `build` then `push`
-- `make run` starts the local stack (compose)
-- `make down` stops the local stack
-- `make logs` tails compose logs
+- `make build SERVICE=agent-gateway` builds a specific service image
+- `make push SERVICE=agent-gateway` pushes a specific `:latest` image
+- `make release SERVICE=agent-gateway` runs `build` then `push` for one service
+- `make list-services` shows valid `SERVICE` values
+
+The top-level `Makefile` delegates to per-service `Makefile`s in `services/*/Makefile`.
+Each service builds from its own `services/<service>/requirements.txt` to keep image dependencies scoped.
+
+Use `docker compose` commands directly for local stack lifecycle operations.
 
 ## Docker Compose Examples
 

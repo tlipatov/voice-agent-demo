@@ -1,0 +1,10 @@
+services:
+  chromadb:
+    image: docker.local.fyre.org/chromadb:latest
+    ports:
+      - "8001:8000"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"

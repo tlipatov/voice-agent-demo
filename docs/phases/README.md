@@ -29,9 +29,9 @@ This directory contains one implementation guide per phase from `docs/TODO.md`.
 Use this flow at the end of each phase:
 
 1. Implement and test phase changes locally.
-2. Build service image(s): `make build`
-3. Push image(s): `make push`
-4. Run stack: `make run` (or `docker compose -f docker/docker-compose.yml up -d`)
+2. Build service image(s): `make build SERVICE=<service>`
+3. Push image(s): `make push SERVICE=<service>`
+4. Run stack: `docker compose -f docker/docker-compose.yml up -d`
 5. Verify acceptance criteria with containerized services.
 
 ## Docker Compose Examples
