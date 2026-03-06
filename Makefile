@@ -1,10 +1,10 @@
 REGISTRY ?= docker.local.fyre.org
 
-SERVICES := agent-gateway rag-loader rag-cli tools chromadb
+SERVICES := agent-gateway rag-loader rag-cli tools chromadb embedding-service
 SERVICE ?=
 SERVICE_DIR := $(subst -,_,$(SERVICE))
 
-.PHONY: build push release list-services check-service build-chromadb push-chromadb
+.PHONY: build push release list-services check-service build-chromadb push-chromadb test
 
 build:
 	@$(MAKE) check-service
@@ -55,3 +55,6 @@ build-chromadb:
 
 push-chromadb:
 	@$(MAKE) -C docker/chromadb push REGISTRY=$(REGISTRY)
+
+test:
+	@$(MAKE) -C services/embedding_service e2e-test

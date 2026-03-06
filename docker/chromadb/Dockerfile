@@ -6,4 +6,4 @@ RUN pip install --no-cache-dir chromadb
 
 EXPOSE 8001
 
-CMD ["chromadb", "run", "--host", "0.0.0.0", "--port", "8001", "--path", "/data"]
+CMD ["chroma", "run", "--host", "0.0.0.0", "--port", "8001", "--path", "/data"]

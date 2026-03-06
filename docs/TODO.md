@@ -77,7 +77,7 @@ Expose port:
 8001
 
 Acceptance Criteria
-curl http://localhost:8001/api/v1/heartbeat
+curl http://localhost:8001/api/v2/heartbeat
 
 returns healthy response.
 Phase 3 — Embedding Module

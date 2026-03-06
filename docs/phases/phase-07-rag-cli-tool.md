@@ -10,8 +10,9 @@ Provide a CLI to query and inspect vector data without running full agent flow.
   - `query --tenant <id> --query "<text>"`
   - `inspect --tenant <id>`
   - `delete --tenant <id>`
+- Execute query operations through embedding-service REST APIs.
 - Display score, source file, and metadata in query output.
-- Maksure he chromadb server host and port are configurable
+- Make embedding-service and Chroma endpoints configurable.
 
 ## Deliverables
 - Functional `rag_cli` command set.

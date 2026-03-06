@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from functools import lru_cache
 from typing import TYPE_CHECKING, List
 
@@ -11,12 +12,47 @@ if TYPE_CHECKING:
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
 
-@lru_cache(maxsize=1)
-def load_embedding_model() -> "SentenceTransformer":
-    """Load and cache the sentence-transformers embedding model."""
+def _env_flag(name: str, default: bool) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def get_model_device() -> str:
+    """Resolve the runtime device for embeddings."""
+    device = os.getenv("EMBEDDING_DEVICE")
+    if device:
+        return device
+
+    try:
+        import torch
+
+        if torch.cuda.is_available():
+            return "cuda"
+    except Exception:
+        # Fall back to CPU when torch is unavailable in non-runtime contexts.
+        pass
+
+    return "cpu"
+
+
+@lru_cache(maxsize=4)
+def _load_embedding_model(device: str) -> "SentenceTransformer":
     from sentence_transformers import SentenceTransformer
 
-    return SentenceTransformer(MODEL_NAME)
+    return SentenceTransformer(MODEL_NAME, device=device)
+
+
+def load_embedding_model() -> "SentenceTransformer":
+    """Load and cache the sentence-transformers embedding model."""
+    return _load_embedding_model(get_model_device())
+
+
+def ensure_gpu_ready() -> None:
+    """Raise if GPU is required but not selected."""
+    if _env_flag("EMBEDDING_REQUIRE_GPU", False) and get_model_device() != "cuda":
+        raise RuntimeError("GPU is required for embeddings but CUDA is not available.")
 
 
 def embed_text(text: str) -> List[float]:

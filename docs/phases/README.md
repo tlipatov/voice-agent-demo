@@ -4,6 +4,7 @@ This directory contains one implementation guide per phase from `docs/TODO.md`.
 
 ## Generated Phase Files
 
+- `phase-00-05-embedding-service.md`
 - `phase-01-repository-setup.md`
 - `phase-02-chromadb-service.md`
 - `phase-03-embedding-module.md`

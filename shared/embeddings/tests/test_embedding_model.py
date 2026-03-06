@@ -32,19 +32,22 @@ class FakeModel:
 class FakeSentenceTransformer(FakeModel):
     init_calls = 0
 
-    def __init__(self, model_name):
+    def __init__(self, model_name, device=None):
         self.model_name = model_name
+        self.device = device
         FakeSentenceTransformer.init_calls += 1
 
 
 class EmbeddingModelTests(unittest.TestCase):
     def setUp(self):
-        embedding_model.load_embedding_model.cache_clear()
+        embedding_model._load_embedding_model.cache_clear()
         FakeSentenceTransformer.init_calls = 0
 
     def test_load_embedding_model_is_cached(self):
         fake_module = types.SimpleNamespace(SentenceTransformer=FakeSentenceTransformer)
-        with patch.dict(sys.modules, {"sentence_transformers": fake_module}):
+        with patch.dict(sys.modules, {"sentence_transformers": fake_module}), patch(
+            "embedding_model.get_model_device", return_value="cpu"
+        ):
             first = embedding_model.load_embedding_model()
             second = embedding_model.load_embedding_model()
 

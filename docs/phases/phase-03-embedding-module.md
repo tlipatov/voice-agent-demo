@@ -1,22 +1,35 @@
 # Phase 03 - Embedding Module
 
 ## Goal
-Implement shared embedding utilities for single and batch text embedding.
+Provide a reusable shared embeddings package consumed by the embedding-service runtime.
 
 ## Implementation Tasks
-- Create `shared/embeddings/embedding_model.py`.
-- Implement `load_embedding_model()`, `embed_text(text)`, `embed_documents(list_of_text)`.
-- Use `sentence-transformers/all-MiniLM-L6-v2`.
-- Add lightweight tests for shape and non-empty output.
-- These are python libraries that care pip installed
+- Keep core module at `shared/embeddings/embedding_model.py`.
+- Implement and maintain:
+  - `load_embedding_model()`
+  - `embed_text(text)`
+  - `embed_documents(list_of_text)`
+- Use model `sentence-transformers/all-MiniLM-L6-v2`.
+- Document and preserve runtime behavior:
+  - device selection via `EMBEDDING_DEVICE` when provided
+  - automatic CUDA detection with CPU fallback when unset
+  - optional hard GPU requirement via `EMBEDDING_REQUIRE_GPU=true`
+- Add lightweight tests for output shape and non-empty vectors.
 
 ## Deliverables
-- Reusable embedding module.
-- Tests for core embedding calls.
+- Shared embeddings library:
+  - `shared/embeddings/embedding_model.py`
+  - `shared/embeddings/pyproject.toml`
+  - `shared/embeddings/README.md`
+- Tests under `shared/embeddings/tests/`.
+
+## Ownership Boundary
+- `sentence-transformers` runtime loading belongs to `embedding_service` only.
+- Other services must consume embedding/query behavior through embedding-service REST APIs rather than loading model runtime directly.
 
 ## Docker + Make Checkpoint
-- Ensure module is available inside `rag-loader`, `rag-cli`, and `agent-gateway` images via pip install
-- Rebuild impacted images with `make build`.
+- Ensure `services/embedding_service` installs `shared/embeddings` via pip during image build.
+- Rebuild impacted image with `make build SERVICE=embedding-service`.
 
 ## Acceptance
-- `embed_text("Hello world")` returns a vector embedding in containerized runtime.
+- `embed_text("Hello world")` returns a vector embedding in containerized embedding-service runtime.

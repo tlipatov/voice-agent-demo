@@ -1,5 +1,4 @@
 chromadb
-sentence-transformers
 typer
 rich
 python-dotenv

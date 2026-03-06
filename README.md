@@ -18,6 +18,7 @@ All service images are tagged and pushed as:
 - `docker.local.fyre.org/agent-gateway:latest`
 - `docker.local.fyre.org/rag-loader:latest`
 - `docker.local.fyre.org/rag-cli:latest`
+- `docker.local.fyre.org/embedding-service:latest`
 - `docker.local.fyre.org/tools:latest`
 - `docker.local.fyre.org/chromadb:latest`
 - `docker.local.fyre.org/vllm:latest`

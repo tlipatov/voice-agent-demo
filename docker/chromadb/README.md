@@ -38,7 +38,7 @@ docker-compose -f docker/docker-compose.yml up -d chromadb
 Healthcheck:
 
 ```bash
-curl http://localhost:8001/api/v1/heartbeat
+curl http://localhost:8001/api/v2/heartbeat
 ```
 
 ## Run with Docker CLI

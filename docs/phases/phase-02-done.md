@@ -10,7 +10,7 @@
 
 - Added `docker/chromadb/Dockerfile` based on `python:3.11`.
 - Installed `chromadb` in the image and configured startup command:
-  - `chromadb run --host 0.0.0.0 --port 8001 --path /data`
+  - `chroma run --host 0.0.0.0 --port 8001 --path /data`
 - Added `docker/chromadb/Makefile` with:
   - `build`
   - `push`
@@ -23,7 +23,7 @@
   - Fixed ChromaDB port mapping to `8001:8001`
   - Added persistent local volume `chromadb_data:/data`
   - Added container healthcheck against:
-    - `http://localhost:8001/api/v1/heartbeat`
+    - `http://localhost:8001/api/v2/heartbeat`
 
 ## Local Commands
 
@@ -34,7 +34,7 @@
 - Run ChromaDB container with compose:
   - `docker-compose -f docker/docker-compose.yml up -d chromadb`
 - Manual healthcheck:
-  - `curl http://localhost:8001/api/v1/heartbeat`
+  - `curl http://localhost:8001/api/v2/heartbeat`
 
 ## Validation Performed
 

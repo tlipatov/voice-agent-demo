@@ -5,7 +5,7 @@ Run ChromaDB as a standalone container service on port `8001`.
 
 ## Implementation Tasks
 - Create `docker/chromadb/Dockerfile` from `python:3.11`.
-- Install `chromadb` and run `chromadb run --host 0.0.0.0 --port 8001`.
+- Install `chromadb` and run `chroma run --host 0.0.0.0 --port 8001`.
 - Add persistent volume strategy for local testing.
 - Add healthcheck expectations to docs.
 
@@ -19,4 +19,4 @@ Run ChromaDB as a standalone container service on port `8001`.
 - Add/verify `make push-chromadb` and include in `make push`.
 
 ## Acceptance
-- `curl http://localhost:8001/api/v1/heartbeat` returns healthy status in containerized run.
+- `curl http://localhost:8001/api/v2/heartbeat` returns healthy status in containerized run.
