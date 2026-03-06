@@ -34,6 +34,21 @@ Use this flow at the end of each phase:
 4. Run stack: `docker compose -f docker/docker-compose.yml up -d`
 5. Verify acceptance criteria with containerized services.
 
+## Implementation Conventions for Agents
+
+When implementing or updating any runnable component in a phase:
+
+- Ensure it has its own `Makefile` for build/push/release commands.
+- Ensure it has its own `README.md` that explains:
+  - what it is for
+  - how to build and run it locally
+  - how to verify health/acceptance checks
+
+Expected locations:
+
+- App services: `services/<service>/Makefile` and `services/<service>/README.md`
+- Infra containers: `docker/<container>/Makefile` and `docker/<container>/README.md`
+
 ## Docker Compose Examples
 
 Bring up all services:

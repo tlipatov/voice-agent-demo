@@ -10,6 +10,14 @@
 - Read and normalize supported document formats.
 - Chunk documents and generate embeddings.
 - Upsert chunk vectors and metadata into Chroma collections.
+- Map collection names as `{tenant_id}_docs`.
+
+## Tenant Discovery Layout
+
+- Tenant root: `rag_data/<tenant_id>/...`
+- Supported file types: `.md`, `.txt`, `.pdf`
+- Discovery/mapping helpers:
+  - `services/rag_loader/tenant_layout.py`
 
 ## Image Build/Push
 

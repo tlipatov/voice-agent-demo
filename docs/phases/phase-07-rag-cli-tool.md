@@ -11,6 +11,7 @@ Provide a CLI to query and inspect vector data without running full agent flow.
   - `inspect --tenant <id>`
   - `delete --tenant <id>`
 - Display score, source file, and metadata in query output.
+- Maksure he chromadb server host and port are configurable
 
 ## Deliverables
 - Functional `rag_cli` command set.

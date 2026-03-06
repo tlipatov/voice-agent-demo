@@ -9,6 +9,7 @@ Build ingestion from tenant documents into ChromaDB collections.
 - Add CLI options: `--tenant <id>` and optional `--all`.
 - Add parser support for `.md`, `.txt`, `.pdf` (PDF parsing included).
 - Add ingestion summary output (files, chunks, errors).
+- Make chromadb server host and port configureable
 
 ## Deliverables
 - Working ingestion pipeline and CLI entrypoint.

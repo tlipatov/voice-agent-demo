@@ -1,10 +1,42 @@
 services:
   chromadb:
     image: docker.local.fyre.org/chromadb:latest
+    container_name: chromadb
     ports:
-      - "8001:8000"
+      - "8001:8001"
+    volumes:
+      - chromadb_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8001/api/v1/heartbeat', timeout=5).read()\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+
+  rag_loader:
+    image: docker.local.fyre.org/rag-loader:latest
+    container_name: rag_loader
+    depends_on:
+      chromadb:
+        condition: service_healthy
+    volumes:
+      - ../rag_data:/app/rag_data:ro
+
+  agent_gateway:
+    image: docker.local.fyre.org/agent-gateway:latest
+    container_name: agent_gateway
+    depends_on:
+      chromadb:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ../rag_data:/app/rag_data:ro
+
+volumes:
+  chromadb_data:

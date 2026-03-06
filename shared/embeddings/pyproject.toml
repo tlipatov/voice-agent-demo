@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "voice-agent-embeddings"
+version = "0.1.0"
+description = "Shared embedding utilities for the voice-agent-demo monorepo"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "sentence-transformers",
+]
+
+[tool.setuptools]
+py-modules = ["embedding_model"]

@@ -1,1 +1,0 @@
-"""Shared schema definitions package."""
