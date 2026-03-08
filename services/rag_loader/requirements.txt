@@ -1,4 +1,1 @@
-chromadb
-pyyaml
-python-dotenv
 requests
