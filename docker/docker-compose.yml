@@ -56,6 +56,9 @@ services:
         condition: service_started
     volumes:
       - ../rag_data:/app/rag_data:ro
+      - ../configs/tenants:/app/configs/tenants:ro
+    environment:
+      - TENANT_CONFIG_DIR=/app/configs/tenants
 
 volumes:
   chromadb_data:

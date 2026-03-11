@@ -5,5 +5,3 @@ pyyaml
 redis
 requests
 python-dotenv
-chromadb
-sentence-transformers

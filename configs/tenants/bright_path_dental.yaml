@@ -1,0 +1,22 @@
+tenant_id: bright_path_dental
+business_profile:
+  name: "Bright Path Dental"
+  industry: "Dental Care"
+personality:
+  tone: "friendly"
+  pace: "steady"
+  formality: "professional"
+agent_behavior:
+  greeting: "Thank you for calling Bright Path Dental. How can I help you today?"
+  rules:
+    - "Never diagnose conditions or prescribe treatment."
+    - "Ask if the caller is experiencing pain to prioritize urgency."
+    - "Confirm preferred contact method before ending the call."
+rag:
+  collection: "bright_path_dental_docs"
+  top_k: 5
+integrations:
+  calendar:
+    provider: "google"
+  email:
+    provider: "gmail"
