@@ -1,0 +1,16 @@
+services:
+  agent_gateway:
+    image: docker.local.fyre.org/agent-gateway:latest
+    container_name: agent_gateway
+    volumes:
+      - ../../configs/tenants:/app/configs/tenants:ro
+    environment:
+      - TENANT_CONFIG_DIR=/app/configs/tenants
+      - EMBEDDING_SERVICE_URL=http://embedding_service:8010
+    networks:
+      - embedding_service_net
+
+networks:
+  embedding_service_net:
+    external: true
+    name: embedding_service_default

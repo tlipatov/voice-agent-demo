@@ -22,6 +22,7 @@
 - Startup now builds `AgentContext` objects from validated tenant configs.
 - Runtime context is cached once per process and reused across request handling.
 - Context values are immutable (`frozen=True` dataclasses + immutable mapping snapshot).
+- When `EMBEDDING_SERVICE_URL` is set, gateway startup validates `GET /healthz` before loading contexts.
 
 ### Local startup check
 
@@ -38,6 +39,14 @@ Expected output includes all loaded tenant runtime contexts and their configured
    - `make build SERVICE=agent-gateway`
 3. Restart/redeploy gateway to apply changes:
    - `docker compose -f docker/docker-compose.yml up -d --build agent_gateway`
+
+### Standalone compose (gateway-only)
+
+Use this when `embedding_service` is already running in its own stack:
+
+```bash
+docker-compose -f services/agent_gateway/docker-compose.yml up -d
+```
 
 ## Image Build/Push
 

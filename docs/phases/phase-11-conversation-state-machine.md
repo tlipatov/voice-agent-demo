@@ -4,6 +4,7 @@
 Implement stage-driven multi-turn conversation flow with Redis persistence.
 
 ## Implementation Tasks
+- add redis to docker-compose.yaml
 - Implement `services/agent_gateway/state_machine.py`.
 - Define stages from greeting through booking and end.
 - Define `SessionState` model and transition logic.
@@ -14,8 +15,14 @@ Implement stage-driven multi-turn conversation flow with Redis persistence.
 - Transition tests for common call scenarios.
 
 ## Docker + Make Checkpoint
-- Ensure `redis` service is in compose and reachable by gateway.
+- Ensure `redis` service is in compose and reachable by agent_gateway
 - Rebuild gateway image after state machine integration.
 
 ## Acceptance
 - Session state persists between turns and service requests.
+
+## Testing
+- create end to end tests
+- Bring up the docker agent_gateway docker-compose up
+- test
+- reitterate
