@@ -5,7 +5,7 @@ from functools import lru_cache
 from pathlib import Path
 from types import MappingProxyType
 
-from services.agent_gateway.src.config_loader import TenantAgentConfig, load_all_tenant_configs
+from services.agent_gateway.src.config_loader import PromptConfig, TenantAgentConfig, load_all_tenant_configs
 
 
 @dataclass(frozen=True)
@@ -27,6 +27,7 @@ class AgentContext:
     rag_top_k: int
     calendar_provider: str
     email_provider: str
+    prompt_config: PromptConfig
 
 
 def build_agent_context(config: TenantAgentConfig) -> AgentContext:
@@ -45,6 +46,7 @@ def build_agent_context(config: TenantAgentConfig) -> AgentContext:
         rag_top_k=config.rag.top_k,
         calendar_provider=config.integrations.calendar.provider,
         email_provider=config.integrations.email.provider,
+        prompt_config=config.prompt,
     )
 
 

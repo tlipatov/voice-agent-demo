@@ -35,6 +35,10 @@ integrations:
     provider: google
   email:
     provider: gmail
+prompt:
+  token_budget: 4096
+  max_history_turns: 10
+  max_rag_snippets: 5
 """
 
 

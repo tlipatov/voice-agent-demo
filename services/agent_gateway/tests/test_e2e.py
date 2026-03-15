@@ -118,5 +118,104 @@ class RagRetrievalE2ETests(unittest.TestCase):
             self.client.query(tenant_id="", query="appointment", n_results=1)
 
 
+class PromptBuilderE2ETests(unittest.TestCase):
+    """E2E tests for prompt_builder using real tenant configs and live RAG."""
+
+    def setUp(self) -> None:
+        from services.agent_gateway.src.context_builder import load_startup_context
+        load_startup_context.cache_clear()
+        self._contexts = load_startup_context(str(TENANT_CONFIG_DIR))
+
+    def tearDown(self) -> None:
+        from services.agent_gateway.src.context_builder import load_startup_context
+        load_startup_context.cache_clear()
+
+    def test_build_messages_returns_list_of_dicts(self) -> None:
+        from services.agent_gateway.src.prompt_builder import build_messages
+        from services.agent_gateway.src.state_machine import SessionState
+
+        context = self._contexts["silver_pine"]
+        state = SessionState(session_id="e2e-test")
+        msgs = build_messages(context, state, [], "What are your hours?")
+
+        self.assertIsInstance(msgs, list)
+        self.assertTrue(len(msgs) >= 2)
+        for msg in msgs:
+            self.assertIn("role", msg)
+            self.assertIn("content", msg)
+            self.assertIsInstance(msg["role"], str)
+            self.assertIsInstance(msg["content"], str)
+
+    def test_first_message_is_system(self) -> None:
+        from services.agent_gateway.src.prompt_builder import build_messages
+        from services.agent_gateway.src.state_machine import SessionState
+
+        context = self._contexts["silver_pine"]
+        state = SessionState(session_id="e2e-test")
+        msgs = build_messages(context, state, [], "Hello")
+        self.assertEqual(msgs[0]["role"], "system")
+
+    def test_last_message_matches_transcript(self) -> None:
+        from services.agent_gateway.src.prompt_builder import build_messages
+        from services.agent_gateway.src.state_machine import SessionState
+
+        context = self._contexts["silver_pine"]
+        state = SessionState(session_id="e2e-test")
+        msgs = build_messages(context, state, [], "What are your hours?")
+        self.assertEqual(msgs[-1]["content"], "What are your hours?")
+
+    def test_build_messages_with_live_rag(self) -> None:
+        if not _embedding_service_is_healthy(EMBEDDING_SERVICE_URL):
+            self.skipTest(f"Embedding service not reachable at {EMBEDDING_SERVICE_URL}/healthz")
+
+        from services.agent_gateway.src.prompt_builder import _RAG_BLOCK_HEADER, build_messages
+        from services.agent_gateway.src.rag_retrieval import RagClient
+        from services.agent_gateway.src.state_machine import SessionState
+
+        context = self._contexts["silver_pine"]
+        client = RagClient(base_url=EMBEDDING_SERVICE_URL)
+        matches = client.query(
+            tenant_id=context.tenant_id,
+            query="appointment scheduling",
+            n_results=context.rag_top_k,
+        )
+        state = SessionState(session_id="e2e-rag-test")
+        msgs = build_messages(context, state, matches, "How do I book an appointment?")
+
+        self.assertEqual(msgs[0]["role"], "system")
+        self.assertEqual(msgs[-1]["content"], "How do I book an appointment?")
+        if matches:
+            rag_msg = next((m for m in msgs if _RAG_BLOCK_HEADER in m.get("content", "")), None)
+            self.assertIsNotNone(rag_msg, "RAG block should be present when matches returned")
+
+    def test_determinism_with_all_tenants(self) -> None:
+        from services.agent_gateway.src.prompt_builder import build_messages
+        from services.agent_gateway.src.state_machine import SessionState
+
+        import json
+        for tenant_id, context in self._contexts.items():
+            state = SessionState(session_id=f"det-{tenant_id}")
+            transcript = "What services do you offer?"
+            out_a = json.dumps(build_messages(context, state, [], transcript), sort_keys=True)
+            out_b = json.dumps(build_messages(context, state, [], transcript), sort_keys=True)
+            self.assertEqual(out_a, out_b, f"Non-deterministic output for tenant {tenant_id}")
+
+    def test_each_tenant_has_distinct_system_message(self) -> None:
+        from services.agent_gateway.src.prompt_builder import build_messages
+        from services.agent_gateway.src.state_machine import SessionState
+
+        system_contents = set()
+        for tenant_id, context in self._contexts.items():
+            state = SessionState(session_id=f"uniq-{tenant_id}")
+            msgs = build_messages(context, state, [], "Hi")
+            system_contents.add(msgs[0]["content"])
+
+        self.assertEqual(
+            len(system_contents),
+            len(self._contexts),
+            "Each tenant must produce a distinct system message",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

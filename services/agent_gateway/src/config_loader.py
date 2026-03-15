@@ -49,6 +49,13 @@ class Integrations:
 
 
 @dataclass(frozen=True)
+class PromptConfig:
+    token_budget: int
+    max_history_turns: int
+    max_rag_snippets: int
+
+
+@dataclass(frozen=True)
 class TenantAgentConfig:
     tenant_id: str
     business_profile: BusinessProfile
@@ -56,6 +63,7 @@ class TenantAgentConfig:
     agent_behavior: AgentBehavior
     rag: RagConfig
     integrations: Integrations
+    prompt: PromptConfig
 
 
 def _require_mapping(value: Any, field_name: str) -> dict[str, Any]:
@@ -78,6 +86,7 @@ def _build_config(raw: dict[str, Any], source: Path) -> TenantAgentConfig:
         "agent_behavior",
         "rag",
         "integrations",
+        "prompt",
     )
     for section in required_sections:
         if section not in raw:
@@ -90,6 +99,7 @@ def _build_config(raw: dict[str, Any], source: Path) -> TenantAgentConfig:
     agent_behavior = _require_mapping(raw["agent_behavior"], "agent_behavior")
     rag = _require_mapping(raw["rag"], "rag")
     integrations = _require_mapping(raw["integrations"], "integrations")
+    prompt_raw = _require_mapping(raw["prompt"], "prompt")
 
     rules_raw = agent_behavior.get("rules")
     if not isinstance(rules_raw, list) or not rules_raw:
@@ -99,6 +109,18 @@ def _build_config(raw: dict[str, Any], source: Path) -> TenantAgentConfig:
     top_k = rag.get("top_k")
     if not isinstance(top_k, int) or top_k < 1:
         raise ConfigError("'rag.top_k' must be an integer >= 1")
+
+    token_budget = prompt_raw.get("token_budget")
+    if not isinstance(token_budget, int) or token_budget < 256:
+        raise ConfigError("'prompt.token_budget' must be an integer >= 256")
+
+    max_history_turns = prompt_raw.get("max_history_turns")
+    if not isinstance(max_history_turns, int) or max_history_turns < 1:
+        raise ConfigError("'prompt.max_history_turns' must be an integer >= 1")
+
+    max_rag_snippets = prompt_raw.get("max_rag_snippets")
+    if not isinstance(max_rag_snippets, int) or max_rag_snippets < 1:
+        raise ConfigError("'prompt.max_rag_snippets' must be an integer >= 1")
 
     calendar = _require_mapping(integrations.get("calendar"), "integrations.calendar")
     email = _require_mapping(integrations.get("email"), "integrations.email")
@@ -125,6 +147,11 @@ def _build_config(raw: dict[str, Any], source: Path) -> TenantAgentConfig:
         integrations=Integrations(
             calendar=ProviderConfig(provider=_require_string(calendar.get("provider"), "integrations.calendar.provider")),
             email=ProviderConfig(provider=_require_string(email.get("provider"), "integrations.email.provider")),
+        ),
+        prompt=PromptConfig(
+            token_budget=token_budget,
+            max_history_turns=max_history_turns,
+            max_rag_snippets=max_rag_snippets,
         ),
     )
 
