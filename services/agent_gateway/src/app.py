@@ -11,6 +11,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from services.agent_gateway.src.context_builder import load_startup_context
+from services.agent_gateway.src.state_machine import RedisSessionStore
 
 
 def _verify_embedding_service(base_url: str, timeout_seconds: float = 5.0) -> None:
@@ -27,11 +28,20 @@ def _verify_embedding_service(base_url: str, timeout_seconds: float = 5.0) -> No
         ) from exc
 
 
+def _verify_redis(redis_url: str) -> None:
+    store = RedisSessionStore(redis_url=redis_url)
+    if not store.ping():
+        raise RuntimeError(f"Redis ping failed for {redis_url}")
+
+
 def main() -> int:
     config_dir = os.getenv("TENANT_CONFIG_DIR", "/app/configs/tenants")
     embedding_service_url = os.getenv("EMBEDDING_SERVICE_URL")
+    redis_url = os.getenv("REDIS_URL")
     if embedding_service_url:
         _verify_embedding_service(embedding_service_url)
+    if redis_url:
+        _verify_redis(redis_url)
     snapshot = load_startup_context(config_dir)
     print(f"Loaded {len(snapshot)} tenant context(s) from {config_dir}")
     for tenant_id, context in snapshot.items():
@@ -42,6 +52,8 @@ def main() -> int:
         )
     if embedding_service_url:
         print(f"Embedding service reachable at {embedding_service_url.rstrip('/')}/healthz")
+    if redis_url:
+        print(f"Redis reachable at {redis_url}")
     return 0
 
 

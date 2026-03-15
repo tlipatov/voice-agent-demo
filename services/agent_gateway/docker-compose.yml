@@ -1,13 +1,24 @@
 services:
+  redis:
+    image: redis:7-alpine
+    container_name: agent_gateway_redis
+    ports:
+      - "6379:6379"
+
   agent_gateway:
     image: docker.local.fyre.org/agent-gateway:latest
     container_name: agent_gateway
+    depends_on:
+      redis:
+        condition: service_started
     volumes:
       - ../../configs/tenants:/app/configs/tenants:ro
     environment:
       - TENANT_CONFIG_DIR=/app/configs/tenants
       - EMBEDDING_SERVICE_URL=http://embedding_service:8010
+      - REDIS_URL=redis://redis:6379/0
     networks:
+      - default
       - embedding_service_net
 
 networks:

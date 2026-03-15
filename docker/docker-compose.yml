@@ -39,6 +39,7 @@ services:
     environment:
       - TENANT_CONFIG_DIR=/app/configs/tenants
       - EMBEDDING_SERVICE_URL=http://embedding_service:8010
+      - REDIS_URL=redis://redis:6379/0
     networks:
       - default
       - embedding_service_net

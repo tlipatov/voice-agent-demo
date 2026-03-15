@@ -24,6 +24,18 @@
 - Context values are immutable (`frozen=True` dataclasses + immutable mapping snapshot).
 - When `EMBEDDING_SERVICE_URL` is set, gateway startup validates `GET /healthz` before loading contexts.
 
+## Phase 11: Conversation State Machine
+
+- Added `services/agent_gateway/src/state_machine.py` with:
+  - Stage enum from greeting through booking end-state.
+  - `SessionState` model for `session_id`, stage, caller details, and history.
+  - `ConversationStateMachine` transition engine for common voice call flows.
+  - `RedisSessionStore` for cross-turn persisted session state in Redis.
+- Added tests for state transitions and Redis persistence under `services/agent_gateway/tests/`.
+- Startup now validates Redis connectivity when `REDIS_URL` is configured.
+- Service-level compose now includes Redis and sets:
+  - `REDIS_URL=redis://redis:6379/0`
+
 ### Local startup check
 
 ```bash
