@@ -11,7 +11,14 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from services.agent_gateway.src.context_builder import load_startup_context
+from services.agent_gateway.src.llm_client import LLMClient
 from services.agent_gateway.src.state_machine import RedisSessionStore
+
+
+def _verify_llm_service(base_url: str, model: str) -> None:
+    client = LLMClient(base_url=base_url, model=model)
+    if not client.health_check():
+        raise RuntimeError(f"LLM service is unreachable at {base_url}")
 
 
 def _verify_embedding_service(base_url: str, timeout_seconds: float = 5.0) -> None:
@@ -38,10 +45,16 @@ def main() -> int:
     config_dir = os.getenv("TENANT_CONFIG_DIR", "/app/configs/tenants")
     embedding_service_url = os.getenv("EMBEDDING_SERVICE_URL")
     redis_url = os.getenv("REDIS_URL")
+    vllm_base_url = os.getenv("VLLM_BASE_URL")
+    vllm_model = os.getenv("VLLM_MODEL", "llama3.2:3b-instruct-q4_K_M")
+
     if embedding_service_url:
         _verify_embedding_service(embedding_service_url)
     if redis_url:
         _verify_redis(redis_url)
+    if vllm_base_url:
+        _verify_llm_service(vllm_base_url, vllm_model)
+
     snapshot = load_startup_context(config_dir)
     print(f"Loaded {len(snapshot)} tenant context(s) from {config_dir}")
     for tenant_id, context in snapshot.items():
@@ -54,6 +67,8 @@ def main() -> int:
         print(f"Embedding service reachable at {embedding_service_url.rstrip('/')}/healthz")
     if redis_url:
         print(f"Redis reachable at {redis_url}")
+    if vllm_base_url:
+        print(f"LLM service reachable at {vllm_base_url} (model: {vllm_model})")
     return 0
 
 

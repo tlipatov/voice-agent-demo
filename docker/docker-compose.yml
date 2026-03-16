@@ -40,6 +40,8 @@ services:
       - TENANT_CONFIG_DIR=/app/configs/tenants
       - EMBEDDING_SERVICE_URL=http://embedding_service:8010
       - REDIS_URL=redis://redis:6379/0
+      - VLLM_BASE_URL=http://192.168.69.14:11434
+      - VLLM_MODEL=llama3.2:3b-instruct-q4_K_M
     networks:
       - default
       - embedding_service_net
