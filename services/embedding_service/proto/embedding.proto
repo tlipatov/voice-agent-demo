@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+service EmbeddingService {
+  rpc Query (QueryRequest) returns (QueryResponse);
+}
+
+message QueryRequest {
+  string tenant_id = 1;
+  string query = 2;
+  int32 n_results = 3;
+}
+
+message QueryResponse {
+  string tenant_id = 1;
+  string query = 2;
+  repeated Match matches = 3;
+}
+
+message Match {
+  string document = 1;
+  map<string, string> metadata = 2;
+  float distance = 3;
+}
