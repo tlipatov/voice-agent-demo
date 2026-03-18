@@ -26,4 +26,4 @@ e2e-test:
 	@set -e; \
 	$(COMPOSE) up -d; \
 	trap '$(COMPOSE) down' EXIT; \
-	python3 -m unittest tests/test_e2e.py
+	python3 -m unittest tests/test_e2e.py tests/test_grpc_e2e.py

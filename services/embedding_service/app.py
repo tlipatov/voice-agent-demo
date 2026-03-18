@@ -161,12 +161,17 @@ def ingest_documents(request: IngestRequest) -> dict[str, Any]:
 
 @app.post("/v1/query")
 def query_documents(request: QueryRequest) -> dict[str, Any]:
+    return _do_query(request.tenant_id, request.query, request.n_results)
+
+
+def _do_query(tenant_id: str, query: str, n_results: int) -> dict[str, Any]:
+    """Core query logic. Returns the same dict shape as the REST response."""
     client = _chroma_client()
-    collection = client.get_or_create_collection(_collection_name(request.tenant_id))
-    query_embedding = embed_text(request.query)
+    collection = client.get_or_create_collection(_collection_name(tenant_id))
+    query_embedding = embed_text(query)
     response = collection.query(
         query_embeddings=[query_embedding],
-        n_results=request.n_results,
+        n_results=n_results,
         include=["documents", "metadatas", "distances"],
     )
 
@@ -184,4 +189,4 @@ def query_documents(request: QueryRequest) -> dict[str, Any]:
             }
         )
 
-    return {"tenant_id": request.tenant_id, "query": request.query, "matches": matches}
+    return {"tenant_id": tenant_id, "query": query, "matches": matches}

@@ -19,10 +19,12 @@ services:
         condition: service_healthy
     ports:
       - "8010:8010"
+      - "50051:50051"
     environment:
       - CHROMA_URL=http://chromadb:8001
       - INGEST_ROOT=/app/rag_data
       - EMBEDDING_DEVICE=cpu
       - EMBEDDING_REQUIRE_GPU=false
+      - GRPC_PORT=50051
     volumes:
       - ../../rag_data:/app/rag_data:ro
